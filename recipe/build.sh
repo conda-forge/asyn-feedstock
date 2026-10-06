@@ -1,6 +1,13 @@
 #!/bin/bash
 set -euxo pipefail
 
+# EPICS sets CPP to "$(CC) -x c -E", and make exports it to rpcgen, which takes
+# CPP to be a single program and cannot run it. Point rpcgen at conda's
+# preprocessor instead, before make gets a chance to override CPP. Anywhere
+# /lib/cpp exists rpcgen uses that and never looks at the environment, which
+# hides the problem (macOS has no /lib/cpp).
+export RPCGEN_CPP="${CPP}"
+
 MODULE_NAME=asyn
 INSTALL_LOCATION="${PREFIX}/epics/modules/${MODULE_NAME}"
 
